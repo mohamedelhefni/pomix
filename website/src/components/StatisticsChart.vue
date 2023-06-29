@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted, ref, type Ref } from "vue";
+import { onMounted } from "vue";
 import Chart from 'chart.js/auto'
 import { useChartsStore } from '@/stores/charts';
 
@@ -38,6 +38,7 @@ onMounted(() => {
         }
     );
 
+    chart.resize(1200, 400)
 
 })
 
@@ -45,11 +46,13 @@ chartStore.$onAction(({ after }) => {
     after(() => {
         let ctx = document.getElementById('chart')
         chart.destroy()
+
         chart = new Chart(
             //@ts-ignore
             ctx,
             {
                 type: chartStore.chartType,
+
                 data: {
                     labels: data.map(row => row.year),
                     datasets: [
@@ -61,6 +64,11 @@ chartStore.$onAction(({ after }) => {
                 }
             }
         );
+        if (chartStore.chartType == 'doughnut') {
+            chart.resize(400, 400)
+        } else {
+            chart.resize(1200, 400)
+        }
     })
 }, true)
 
@@ -69,8 +77,7 @@ chartStore.$onAction(({ after }) => {
 </script>
 
 <template>
-    <div
-        :class="{ 'w-1/2 mx-auto my-5 py-5': chartStore.chartType == 'doughnut', 'w-full': chartStore.chartType != 'doughnut' }">
-        <canvas id="chart"></canvas>
+    <div class="mx-auto py-5 mt-8 ">
+        <canvas id="chart"> </canvas>
     </div>
 </template>
