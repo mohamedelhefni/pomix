@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import Logo from './TheLogo.vue';
-import { PhChartDonut, PhGear, PhHouse, PhInfo } from '@phosphor-icons/vue';
+import {  PhGear, PhHouse, PhInfo, PhPresentationChart } from '@phosphor-icons/vue';
 </script>
 
 <template>
@@ -18,7 +18,7 @@ import { PhChartDonut, PhGear, PhHouse, PhInfo } from '@phosphor-icons/vue';
                 </li>
                 <li>
                     <RouterLink to="/statistics">
-                        <PhChartDonut :size="24" class="text-base-content" />
+                        <PhPresentationChart :size="24" class="text-base-content" />
                         Statistics
                     </RouterLink>
                 </li>

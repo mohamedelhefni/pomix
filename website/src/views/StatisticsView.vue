@@ -1,6 +1,13 @@
+<script setup lang="ts">
+import SessionsGrid from '../components/SessionsStatsGrid.vue';
+
+
+</script>
+
 <template>
-  <div class="stats">
-    <h1>This is an statistics page</h1>
+  <div class="flex flex-col items-start  gap-3 p-5">
+    <h1 class="text-4xl font-bold">Overview</h1>
+    <SessionsGrid />
   </div>
 </template>
 
