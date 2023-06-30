@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { usePomoStore } from "@/stores/pomo"
+const pomoStore = usePomoStore()
+
 </script>
 
 <template>

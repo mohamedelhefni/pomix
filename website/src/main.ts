@@ -12,6 +12,13 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
+
+// persist pinia stores in localStorage
+const piniaState = localStorage.getItem('piniaState')
+if (piniaState) {
+    pinia.state.value = JSON.parse(piniaState)
+}
+
 watch(
     pinia.state,
     (state) => {
