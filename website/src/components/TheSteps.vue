@@ -2,15 +2,15 @@
 import { usePomoStore } from "@/stores/pomo"
 import { storeToRefs } from "pinia";
 const pomoStore = usePomoStore()
-const { sessionRounds, currentSession } = storeToRefs(pomoStore)
+const { sessionRounds, currentRound } = storeToRefs(pomoStore)
 
 </script>
 
 <template>
     <ul class="steps steps-vertical lg:steps-horizontal">
         <li v-for="(step) in Array(sessionRounds).fill(null).map((_, i) => i + 1) " :key="step" class="step"
-            :class="{ 'step-neutral': step <= currentSession }">
-            {{ (step) % 2 == 0 ? "Focus" : "Break" }}
+            :class="{ 'step-neutral': step <= currentRound }">
+            {{ (step) % 2 != 0 ? "👨‍💻" : "💤" }}
         </li>
     </ul>
 </template>

@@ -28,12 +28,7 @@ import {  PhGear, PhHouse, PhInfo, PhPresentationChart } from '@phosphor-icons/v
                         Settings
                     </RouterLink>
                 </li>
-                <li>
-                    <RouterLink to="/about">
-                        <PhInfo :size="24" class="text-base-content" />
-                        About
-                    </RouterLink>
-                </li>
+
 
             </ul>
         </div>

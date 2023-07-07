@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { PhArrowCounterClockwise, PhPlay, PhSkipForward } from '@phosphor-icons/vue';
+import { usePomoStore } from '@/stores/pomo';
+import { PhArrowCounterClockwise, PhPause, PhPlay, PhSkipForward } from '@phosphor-icons/vue';
+const pomoStore = usePomoStore()
 const ICON_SIZE = 40
+
+
 </script>
 
 <template>
     <div class="flex items-center gap-3">
         <button class="flex flex-col gap-3 items-center justify-center">
-            <PhArrowCounterClockwise :size="ICON_SIZE"
+            <PhArrowCounterClockwise @click="pomoStore.resetTimer()" :size="ICON_SIZE"
                 class="text-base-content border border-base-content rounded-full p-1.5" />
 
             <span><kbd class="kbd kbd-sm">R</kbd></span>
         </button>
         <button class="flex flex-col gap-1 items-center justify-center">
-            <PhPlay :size="ICON_SIZE + 10" class="text-base-content" weight="fill" />
+            <PhPlay v-if="pomoStore.isPaused" @click="pomoStore.startTimer()" :size="ICON_SIZE + 10"
+                class="text-base-content" weight="fill" />
+            <PhPause v-else @click="pomoStore.pauseTimer()" :size="ICON_SIZE + 10" class="text-base-content"
+                weight="fill" />
             <span><kbd class="kbd kbd-sm">Space</kbd></span>
         </button>
 

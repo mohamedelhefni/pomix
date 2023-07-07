@@ -2,10 +2,13 @@
 import { usePomoStore } from '@/stores/pomo';
 import SessionSlider from './SessionSlider.vue';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 const pomoStore = usePomoStore()
-const { workDuration, shortBreakDuration, longBreakDuration, sessionRounds } = storeToRefs(pomoStore)
-const { setWorkDuration, setLongBreakDuration, setShortBreakDuration, setSessionRounds } = pomoStore
 
+const { workDuration, shortBreakDuration, longBreakDuration, sessionRounds, isAutoStart, longBreakAfter } = storeToRefs(pomoStore)
+const { setWorkDuration, setLongBreakDuration, setShortBreakDuration, setSessionRounds, setLongBreakAfter, setIsAutoStart } = pomoStore
+
+const isAuto = ref(isAutoStart)
 
 </script>
 
@@ -19,5 +22,19 @@ const { setWorkDuration, setLongBreakDuration, setShortBreakDuration, setSession
             :max="120" :value="longBreakDuration" label="min" />
         <SessionSlider @input="(e: any) => setSessionRounds(+e.target.value)" title="Session Rounds" :min="2" :max="15"
             :value="sessionRounds" label="sessions" />
+        <div class="form-control">
+            <label class="cursor-pointer label">
+                <h3 class="label-text text-base-content text-md">Long Break after</h3>
+                <input @input="(e: any) => setLongBreakAfter(+e.target.value)" type="number"
+                    class="input input-xs input-bordered" :value="longBreakAfter" min="2" max="15" />
+            </label>
+        </div>
+        <div class="form-control">
+            <label class="cursor-pointer label">
+                <h3 class="label-text text-base-content text-md">Auto Start</h3>
+                <input @input="(e: any) => setIsAutoStart(isAuto.valueOf())" type="checkbox" checked="true" class="checkbox"
+                    :value="isAutoStart" v-model="isAuto" />
+            </label>
+        </div>
     </div>
 </template>
