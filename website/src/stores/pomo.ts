@@ -20,12 +20,13 @@ export const usePomoStore = defineStore("pomo", () => {
     const longBreakAfter: Ref<any> = ref(4)
     const isWorking: Ref<Boolean> = ref(true)
     const isPaused: Ref<Boolean> = ref(true)
-    const currentRound: Ref<any> = ref(4)
-    let timerStartInterval: any = null
+    const currentRound: Ref<any> = ref(1)
+    const timerStartInterval: Ref<any> = ref(undefined)
 
     function startTimer() {
         isPaused.value = false
-        timerStartInterval = setInterval(() => {
+        if (timerStartInterval.value) return
+        timerStartInterval.value = setInterval(() => {
             if (counter.value === 0) {
                 // notify user
                 if (isWorking.value) {
@@ -37,6 +38,9 @@ export const usePomoStore = defineStore("pomo", () => {
                 // check if long or short break duration  
                 isWorking.value = !isWorking.value;
                 counter.value = isWorking.value ? workDuration.value * 60 : shortBreakDuration.value * 60;
+                if (!isAutoStart.value) {
+                    pauseTimer()
+                }
             }
             const minutes = Math.floor(counter.value / 60);
             const seconds = counter.value % 60;
@@ -48,18 +52,21 @@ export const usePomoStore = defineStore("pomo", () => {
 
     function pauseTimer() {
         isPaused.value = true
-        clearInterval(timerStartInterval)
+        clearInterval(timerStartInterval.value)
+        timerStartInterval.value = undefined
     }
 
     function resetTimer() {
         isPaused.value = true
         if (isWorking.value) {
             counter.value = workDuration.value * 60
+            currentTime.value = `${workDuration.value.toString().padStart(2, '0')}:00`
         } else {
             counter.value = shortBreakDuration.value * 60
+            currentTime.value = `${shortBreakDuration.value.toString().padStart(2, '0')}:00`
         }
-        currentTime.value = `${workDuration.value.toString().padStart(2, '0')}:00`
-        clearInterval(timerStartInterval)
+        clearInterval(timerStartInterval.value)
+        timerStartInterval.value = undefined
     }
 
     function setActiveCategory(category: CategoryItem) {

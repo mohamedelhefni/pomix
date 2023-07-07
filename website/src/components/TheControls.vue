@@ -4,6 +4,26 @@ import { PhArrowCounterClockwise, PhPause, PhPlay, PhSkipForward } from '@phosph
 const pomoStore = usePomoStore()
 const ICON_SIZE = 40
 
+document.addEventListener("keypress", function onEvent(event) {
+    const formElements = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
+    event = event || window.event;
+    //@ts-ignore
+    if (formElements.includes(event?.target?.tagName)) {
+        return
+    }
+    if (event.key === "r") {
+        pomoStore.resetTimer()
+    }
+    else if (event.key === " ") {
+        if (pomoStore.isPaused) {
+            pomoStore.startTimer()
+        } else {
+            pomoStore.pauseTimer()
+        }
+    } else if (event.key === "n") {
+        // move to next
+    }
+});
 
 </script>
 

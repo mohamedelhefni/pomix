@@ -51,14 +51,16 @@ function showEdit(category: CategoryItem) {
                     placeholder="Category Name" />
                 <input v-model="categoryColor" class="input input-bordered join-item w-[100px]" type="color"
                     placeholder="Category Color" />
-                <button v-if="isEdit"
-                    @click.prevent="pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor })"
-                    class="btn join-item rounded-r-full">
+                <button v-if="isEdit" @click.prevent="() => {
+                    pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor })
+                    showAdd = false
+                }" class="btn join-item rounded-r-full">
                     <PhCheck :size="22" />
                 </button>
-                <button v-else
-                    @click.prevent="pomoStore.addCategory({ id: Date.now(), name: categoryName, color: categoryColor })"
-                    class="btn join-item rounded-r-full">
+                <button v-else @click.prevent="() => {
+                    pomoStore.addCategory({ id: Date.now(), name: categoryName, color: categoryColor })
+                    showAdd = false
+                }" class="btn join-item rounded-r-full">
                     <PhPlus :size="22" />
                 </button>
             </div>
