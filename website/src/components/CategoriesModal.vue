@@ -1,6 +1,7 @@
 <script  setup lang="ts">
 import { usePomoStore } from '@/stores/pomo';
 import type { CategoryItem } from '@/types/types';
+import { UUID } from '@/utils/uuid';
 import { PhCheck, PhPen, PhPlus, PhPlusCircle, PhTrash } from '@phosphor-icons/vue';
 import { ref } from 'vue';
 
@@ -58,7 +59,7 @@ function showEdit(category: CategoryItem) {
                     <PhCheck :size="22" />
                 </button>
                 <button v-else @click.prevent="() => {
-                    pomoStore.addCategory({ id: Date.now(), name: categoryName, color: categoryColor })
+                    pomoStore.addCategory({ id: UUID(), name: categoryName, color: categoryColor })
                     showAdd = false
                 }" class="btn join-item rounded-r-full">
                     <PhPlus :size="22" />

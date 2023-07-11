@@ -22,6 +22,7 @@ document.addEventListener("keypress", function onEvent(event) {
         }
     } else if (event.key === "n") {
         // move to next
+        pomoStore.skipRound()
     }
 });
 
@@ -44,7 +45,8 @@ document.addEventListener("keypress", function onEvent(event) {
         </button>
 
         <button class="flex flex-col gap-3 items-center justify-center">
-            <PhSkipForward :size="ICON_SIZE" class="text-base-content border border-base-content rounded-full p-1.5" />
+            <PhSkipForward @click="pomoStore.skipRound()" :size="ICON_SIZE"
+                class="text-base-content border border-base-content rounded-full p-1.5" />
             <span><kbd class="kbd kbd-sm">N</kbd></span>
         </button>
     </div>

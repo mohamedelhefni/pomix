@@ -1,16 +1,36 @@
 <script setup lang="ts">
-import Timer from "./TheTimer.vue"
+import Categories from "./TheCategories.vue"
 import Controls from "./TheControls.vue"
 import Steps from "./TheSteps.vue"
-import Categories from "./TheCategories.vue"
+import Timer from "./TheTimer.vue"
 import { PhGithubLogo, PhTwitterLogo } from "@phosphor-icons/vue";
+
+import { ref, watch, nextTick } from "vue";
+import { storeToRefs } from "pinia";
+import { usePomoStore } from "@/stores/pomo"
+
+
+const pomoStore = usePomoStore()
+const { categories, activeCategory } = storeToRefs(pomoStore)
+
+
+const renderSteps = ref(true)
+
+watch([categories, activeCategory], async (state) => {
+    renderSteps.value = false
+    await nextTick()
+    renderSteps.value = true
+}, { deep: true })
+
+
+
 
 </script>
 
 <template>
     <div class="flex flex-col items-center justify-between  w-full h-full p-5">
         <div class="flex flex-col items-center gap-5 mt-10">
-            <Steps />
+            <Steps v-if="renderSteps" />
             <Timer />
             <Controls />
             <Categories />

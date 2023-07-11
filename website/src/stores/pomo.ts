@@ -1,15 +1,16 @@
-import type { CategoryItem } from "@/types/types";
+import type { CategoryItem, RoundItem, SessionItem } from "@/types/types";
 import { defineStore } from "pinia";
 import { ref, type Ref } from "vue";
 import { EMOJIS } from "@/types/constatns";
+import { UUID } from "@/utils/uuid";
 
 export const usePomoStore = defineStore("pomo", () => {
     const categories: Ref<CategoryItem[]> = ref([{
-        id: 1,
+        id: UUID(),
         name: "Uncategorized",
         color: "#000000"
     }])
-    const activeCategory: Ref<CategoryItem | null> = ref(categories.value[0])
+    const activeCategory: Ref<CategoryItem | undefined> = ref(categories.value[0])
     const sessionRounds: Ref<any> = ref(4)
     const workDuration: Ref<any> = ref(45)
     const longBreakDuration: Ref<any> = ref(60)
@@ -20,21 +21,57 @@ export const usePomoStore = defineStore("pomo", () => {
     const longBreakAfter: Ref<any> = ref(4)
     const isWorking: Ref<Boolean> = ref(true)
     const isPaused: Ref<Boolean> = ref(true)
-    const currentRound: Ref<any> = ref(1)
+    const currentRound: Ref<RoundItem> = ref({ id: UUID(), color: activeCategory.value?.color || "#000000", order: 1, categoryId: activeCategory.value?.id, isSkipped: false, isBreak: false })
     const timerStartInterval: Ref<any> = ref(undefined)
+    const sessions: Ref<SessionItem[]> = ref([{ id: UUID(), rounds: [] }])
+    const currentSession: Ref<SessionItem> = ref(sessions.value[0])
 
-    function startTimer() {
+    function newRound(skip: boolean) {
+        return {
+            id: UUID(),
+            color: activeCategory.value?.color || '#000',
+            isSkipped: skip,
+            isBreak: !isWorking.value,
+            categoryId: activeCategory.value?.id,
+            order: currentSession.value.rounds.length + 1
+        }
+    }
+
+    function startNewSession() {
+        // if current session rounds is equal to session rounds start new session 
+        // start new session
+        currentSession.value.endDate = Date.now()
+        sessions.value.push(currentSession.value)
+        currentSession.value = {
+            id: UUID(),
+            rounds: [],
+            startDate: Date.now()
+        }
+
+    }
+
+    function startTimer(skip: boolean = false) {
         isPaused.value = false
         if (timerStartInterval.value) return
         timerStartInterval.value = setInterval(() => {
             if (counter.value === 0) {
-                // notify user
+                // set current round
+                currentRound.value = newRound(skip)
+                currentSession.value.rounds.push(currentRound.value)
+
+                // if current session rounds is equal to session rounds start new session 
+
+                if (currentSession.value.rounds.length >= (sessionRounds.value)) {
+                    startNewSession()
+                }
                 if (isWorking.value) {
                     new Notification("Break Started")
                 } else {
                     new Notification("Break Ended")
                 }
                 // move to next round
+
+
                 // check if long or short break duration  
                 isWorking.value = !isWorking.value;
                 counter.value = isWorking.value ? workDuration.value * 60 : shortBreakDuration.value * 60;
@@ -69,12 +106,22 @@ export const usePomoStore = defineStore("pomo", () => {
         timerStartInterval.value = undefined
     }
 
+    function skipRound() {
+        counter.value = 0
+        currentTime.value = `00:00`
+        clearInterval(timerStartInterval.value)
+        timerStartInterval.value = undefined
+        startTimer(true)
+    }
+
     function setActiveCategory(category: CategoryItem) {
         activeCategory.value = category
     }
 
     function setWorkDuration(duration: number) {
         workDuration.value = duration
+        counter.value = workDuration.value * 60
+        currentTime.value = `${workDuration.value.toString().padStart(2, '0')}:00`
     }
 
     function setLongBreakDuration(duration: number) {
@@ -87,6 +134,9 @@ export const usePomoStore = defineStore("pomo", () => {
 
     function setSessionRounds(rounds: number) {
         sessionRounds.value = rounds
+        if (currentSession.value.rounds.length >= (sessionRounds.value)) {
+            startNewSession()
+        }
     }
 
     function addCategory(category: CategoryItem) {
@@ -124,7 +174,7 @@ export const usePomoStore = defineStore("pomo", () => {
     }
 
     return {
-        categories, activeCategory, sessionRounds, workDuration, longBreakDuration, shortBreakDuration, currentTime, currentRound,
+        sessions, currentSession, categories, activeCategory, sessionRounds, workDuration, longBreakDuration, shortBreakDuration, currentTime, currentRound,
         counter,
         isAutoStart,
         longBreakAfter,
@@ -133,6 +183,7 @@ export const usePomoStore = defineStore("pomo", () => {
         startTimer,
         pauseTimer,
         resetTimer,
+        skipRound,
         addCategory,
         editCategory,
         setActiveCategory,
