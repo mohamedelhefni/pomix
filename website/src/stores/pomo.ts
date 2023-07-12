@@ -1,6 +1,6 @@
 import type { CategoryItem, RoundItem, SessionItem } from "@/types/types";
 import { defineStore } from "pinia";
-import { ref, type Ref } from "vue";
+import { ref, watch, type Ref } from "vue";
 import { EMOJIS } from "@/types/constatns";
 import { UUID } from "@/utils/uuid";
 
@@ -25,6 +25,13 @@ export const usePomoStore = defineStore("pomo", () => {
     const timerStartInterval: Ref<any> = ref(undefined)
     const sessions: Ref<SessionItem[]> = ref([{ id: UUID(), rounds: [] }])
     const currentSession: Ref<SessionItem> = ref(sessions.value[0])
+    const pomoCounter: Ref<number> = ref(0)
+    const breakDuration: Ref<number> = ref(shortBreakDuration.value)
+
+
+    watch(pomoCounter, (state) => {
+        breakDuration.value = ((state % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
+    }, { deep: true })
 
     function newRound(skip: boolean) {
         return {
@@ -53,28 +60,32 @@ export const usePomoStore = defineStore("pomo", () => {
     function startTimer(skip: boolean = false) {
         isPaused.value = false
         if (timerStartInterval.value) return
+
         timerStartInterval.value = setInterval(() => {
             if (counter.value === 0) {
-                // set current round
+
                 currentRound.value = newRound(skip)
                 currentSession.value.rounds.push(currentRound.value)
-
-                // if current session rounds is equal to session rounds start new session 
 
                 if (currentSession.value.rounds.length >= (sessionRounds.value)) {
                     startNewSession()
                 }
+
+
                 if (isWorking.value) {
-                    new Notification("Break Started")
-                } else {
-                    new Notification("Break Ended")
+                    pomoCounter.value++
                 }
-                // move to next round
 
+                breakDuration.value = ((pomoCounter.value % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
 
-                // check if long or short break duration  
+                if (isWorking.value) {
+                    new Notification(`You have ${breakDuration.value} mintues before next pomodoro`)
+                } else {
+                    new Notification("Break Ended it's time to start working")
+                }
+
                 isWorking.value = !isWorking.value;
-                counter.value = isWorking.value ? workDuration.value * 60 : shortBreakDuration.value * 60;
+                counter.value = isWorking.value ? workDuration.value * 60 : breakDuration.value * 60;
                 if (!isAutoStart.value) {
                     pauseTimer()
                 }
@@ -99,8 +110,8 @@ export const usePomoStore = defineStore("pomo", () => {
             counter.value = workDuration.value * 60
             currentTime.value = `${workDuration.value.toString().padStart(2, '0')}:00`
         } else {
-            counter.value = shortBreakDuration.value * 60
-            currentTime.value = `${shortBreakDuration.value.toString().padStart(2, '0')}:00`
+            counter.value = breakDuration.value * 60
+            currentTime.value = `${breakDuration.value.toString().padStart(2, '0')}:00`
         }
         clearInterval(timerStartInterval.value)
         timerStartInterval.value = undefined
@@ -165,7 +176,7 @@ export const usePomoStore = defineStore("pomo", () => {
         if (isWorking.value) {
             return ~~((counter.value / (workDuration.value * 60)) * 100)
         }
-        return ~~((counter.value / (shortBreakDuration.value * 60)) * 100)
+        return ~~((counter.value / (breakDuration.value * 60)) * 100)
     }
 
 
@@ -180,6 +191,7 @@ export const usePomoStore = defineStore("pomo", () => {
         longBreakAfter,
         isPaused,
         isWorking,
+        pomoCounter,
         startTimer,
         pauseTimer,
         resetTimer,

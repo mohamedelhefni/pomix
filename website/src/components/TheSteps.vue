@@ -15,14 +15,16 @@ let rounds = currentSession.value.rounds.map(round => {
 </script>
 
 <template>
-    <ul class="steps steps-vertical lg:steps-horizontal">
-        <li v-for="(step) in  Array(sessionRounds).fill(null).map((_, i) => i)  " :key="rounds[step]?.id || step"
-            class="step"
-            :style="{ '--step-background-color': rounds[step]?.category?.color || activeCategory?.color, '--step-color': getReverseColor(rounds[step]?.category?.color || activeCategory?.color) }"
-            :class="{ 'neutral step-custom': step <= currentSession.rounds.length }">
-            {{ (step + 1) % 2 != 0 ? "👨‍💻" : "💤" }}
-        </li>
-    </ul>
+    <div class="overflow-x-auto">
+        <ul class="steps steps-horizontal ">
+            <li v-for="(step) in  Array(sessionRounds).fill(null).map((_, i) => i)  " :key="rounds[step]?.id || step"
+                class="step"
+                :style="{ '--step-background-color': rounds[step]?.category?.color || activeCategory?.color, '--step-color': getReverseColor(rounds[step]?.category?.color || activeCategory?.color) }"
+                :class="{ 'neutral step-custom': step <= currentSession.rounds.length }">
+                {{ (step + 1) % 2 != 0 ? "👨‍💻" : "💤" }}
+            </li>
+        </ul>
+    </div>
 </template>
 
 <style>
