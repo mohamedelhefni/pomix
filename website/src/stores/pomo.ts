@@ -81,7 +81,7 @@ export const usePomoStore = defineStore("pomo", () => {
                 if (isWorking.value) {
                     new Notification(`You have ${breakDuration.value} mintues before next pomodoro`)
                 } else {
-                    new Notification("Break Ended it's time to start working")
+                    new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
                 }
 
                 isWorking.value = !isWorking.value;

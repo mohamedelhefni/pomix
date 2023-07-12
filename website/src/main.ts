@@ -5,13 +5,16 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import Vue3ColorPicker from "vue3-colorpicker";
+import "vue3-colorpicker/style.css";
+
 
 const app = createApp(App)
 
 const pinia = createPinia()
 app.use(pinia)
 app.use(router)
-
+app.use(Vue3ColorPicker)
 
 // persist pinia stores in localStorage
 const piniaState = localStorage.getItem('piniaState')

@@ -3,7 +3,8 @@ import { usePomoStore } from '@/stores/pomo';
 import type { CategoryItem } from '@/types/types';
 import { UUID } from '@/utils/uuid';
 import { PhCheck, PhPen, PhPlus, PhPlusCircle, PhTrash } from '@phosphor-icons/vue';
-import { ref } from 'vue';
+
+import { ref } from 'vue'
 
 const pomoStore = usePomoStore()
 const editCategoryId = ref()
@@ -13,12 +14,18 @@ const showAdd = ref(false)
 const isEdit = ref(false)
 
 
+
 function showEdit(category: CategoryItem) {
     showAdd.value = true
     isEdit.value = true
     categoryName.value = category.name
     categoryColor.value = category.color
     editCategoryId.value = category.id
+}
+
+
+function setColor(val: string) {
+    categoryColor.value = val
 }
 
 </script>
@@ -47,11 +54,13 @@ function showEdit(category: CategoryItem) {
                 </li>
 
             </ul>
-            <div v-if="showAdd" class="join mx-auto w-full justify-center">
+            <div v-if="showAdd" class="join mx-auto w-full items-center justify-center gap-2">
                 <input v-model="categoryName" class="input input-bordered join-item" type="text"
                     placeholder="Category Name" />
-                <input v-model="categoryColor" class="input input-bordered join-item w-[100px]" type="color"
-                    placeholder="Category Color" />
+
+                <ColorPicker model="color" @gradiantColorChange="setColor" @pureColorChange="setColor"
+                    picker-container=".modal" />
+
                 <button v-if="isEdit" @click.prevent="() => {
                     pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor })
                     showAdd = false
