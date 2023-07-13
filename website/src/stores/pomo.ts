@@ -8,7 +8,8 @@ export const usePomoStore = defineStore("pomo", () => {
     const categories: Ref<CategoryItem[]> = ref([{
         id: UUID(),
         name: "Uncategorized",
-        color: "#000000"
+        color: "#000000",
+        isDeleted: false
     }])
     const activeCategory: Ref<CategoryItem | undefined> = ref(categories.value[0])
     const sessionRounds: Ref<any> = ref(4)
@@ -40,7 +41,8 @@ export const usePomoStore = defineStore("pomo", () => {
             isSkipped: skip,
             isBreak: !isWorking.value,
             categoryId: activeCategory.value?.id,
-            order: currentSession.value.rounds.length + 1
+            order: currentSession.value.rounds.length + 1,
+            startDate: Date.now()
         }
     }
 
@@ -171,6 +173,13 @@ export const usePomoStore = defineStore("pomo", () => {
         }
     }
 
+    function deleteCategory(category: CategoryItem) {
+        const index = categories.value.findIndex(cat => cat.id == category.id)
+        if (index < 0) return
+        categories.value[index].isDeleted = true
+        activeCategory.value = categories.value[0]
+    }
+
 
     function getCounterProgress(): number {
         if (isWorking.value) {
@@ -198,6 +207,7 @@ export const usePomoStore = defineStore("pomo", () => {
         skipRound,
         addCategory,
         editCategory,
+        deleteCategory,
         setActiveCategory,
         setWorkDuration,
         setLongBreakDuration,

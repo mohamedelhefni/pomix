@@ -4,13 +4,19 @@ import { Chart } from 'chart.js/auto'
 
 export const useChartsStore = defineStore('charts', () => {
     type chartTypes = 'line' | 'bar' | 'doughnut'
+    type filterTypes = 'categories' | 'sessions' | 'rounds'
+    type durationFilterTypes = 'day' | 'week' | 'year' | 'month' | 'all'
+
     const chartType: Ref<chartTypes> = ref('line')
     const activeChart: any = ref();
+    const filterType: Ref<filterTypes> = ref('categories')
+    const duraitonFilterType: Ref<durationFilterTypes> = ref('day')
+
     let chart: any;
     const chartCtx: any = ref()
     const chartData: any = ref([])
 
-    function drawChart(ctx: any, data: any) {
+    function drawChart(ctx: any, data: any, options = {}) {
         if (chart) {
             chart.destroy()
         }
@@ -18,15 +24,8 @@ export const useChartsStore = defineStore('charts', () => {
             ctx,
             {
                 type: chartType.value,
-                data: {
-                    labels: data.map((row: any) => row.year),
-                    datasets: [
-                        {
-                            label: 'Acquisitions by year',
-                            data: data.map((row: any) => row.count)
-                        }
-                    ]
-                }
+                data: data,
+                options: options
             }
         );
         if (chartType.value == 'doughnut') {
@@ -46,7 +45,14 @@ export const useChartsStore = defineStore('charts', () => {
         }
     }
 
+    function setFilterType(type: filterTypes) {
+        filterType.value = type
+    }
+
+    function setDuraitonFilterType(type: durationFilterTypes) {
+        duraitonFilterType.value = type
+    }
 
 
-    return { chartType, setChartType, activeChart, chart, drawChart }
+    return { chartType, setChartType, activeChart, chart, drawChart, filterType, setFilterType, duraitonFilterType, setDuraitonFilterType }
 })

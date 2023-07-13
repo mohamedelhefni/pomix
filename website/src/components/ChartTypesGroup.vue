@@ -7,13 +7,13 @@ const chartStore = useChartsStore()
 </script>
 <template>
     <div class="btn-group">
-        <button @click="chartStore.setChartType('line')" class="btn btn-sm "
+        <button v-if="chartStore.filterType != 'categories'" @click="chartStore.setChartType('line')" class="btn btn-sm "
             :class="{ 'btn-active': chartStore.chartType == 'line' }">
             <PhChartLine :size="24" />
             Line
         </button>
-        <button @click="chartStore.setChartType('doughnut')" class="btn btn-sm "
-            :class="{ 'btn-active': chartStore.chartType == 'doughnut' }">
+        <button v-if="chartStore.filterType == 'categories'" @click="chartStore.setChartType('doughnut')"
+            class="btn btn-sm " :class="{ 'btn-active': chartStore.chartType == 'doughnut' }">
             <PhChartDonut :size="24" />
             Pie
         </button>

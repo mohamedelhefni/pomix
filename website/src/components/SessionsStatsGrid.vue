@@ -2,8 +2,26 @@
 import Card from "./DaisyCard.vue"
 import Chart from "./StatisticsChart.vue"
 import ChartTypesGroup from "./ChartTypesGroup.vue";
-import SessionDurationGroup from "./SessionDurationGroup.vue"
+import FilterDurationGroup from "./FilterDurationGroup.vue"
 import ChartFiltersGroup from "./ChartFiltersGroup.vue"
+import { useChartsStore } from "@/stores/charts";
+import { storeToRefs } from "pinia";
+import { ref, watch, nextTick } from "vue";
+
+
+
+const chartStore = useChartsStore()
+const { filterType, duraitonFilterType, chartType } = storeToRefs(chartStore)
+
+const renderChart = ref(true)
+
+watch([filterType, duraitonFilterType, chartType], async (state) => {
+    renderChart.value = false
+    await nextTick()
+    renderChart.value = true
+}, { deep: true })
+
+
 
 
 </script>
@@ -17,10 +35,10 @@ import ChartFiltersGroup from "./ChartFiltersGroup.vue"
                     <div class="flex flex-wrap items-center gap-3">
                         <ChartFiltersGroup />
                         <div class="divider divider-horizontal"></div>
-                        <SessionDurationGroup />
+                        <FilterDurationGroup />
                     </div>
                 </div>
-                <Chart />
+                <Chart v-if="renderChart" />
             </Card>
         </div>
     </div>

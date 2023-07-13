@@ -1,7 +1,11 @@
+
+
+
 export interface CategoryItem {
     id: string
     color: string
     name: string
+    isDeleted: boolean
 }
 
 
@@ -11,8 +15,8 @@ export interface RoundItem {
     order: number
     isSkipped: boolean
     isBreak: boolean
-    startDate?: Date
-    endDate?: Date
+    startDate?: number
+    endDate?: number
     duration?: number
     categoryId: string | undefined
     category?: CategoryItem | undefined

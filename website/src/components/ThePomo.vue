@@ -11,12 +11,11 @@ import { usePomoStore } from "@/stores/pomo"
 
 
 const pomoStore = usePomoStore()
-const { categories, activeCategory } = storeToRefs(pomoStore)
-
+const { categories, activeCategory, currentSession } = storeToRefs(pomoStore)
 
 const renderSteps = ref(true)
 
-watch([categories, activeCategory], async (state) => {
+watch([categories, activeCategory, currentSession], async (state) => {
     renderSteps.value = false
     await nextTick()
     renderSteps.value = true

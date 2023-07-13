@@ -13,7 +13,11 @@ const categoryName = ref("")
 const showAdd = ref(false)
 const isEdit = ref(false)
 
-
+function toggleAdd() {
+    showAdd.value = !showAdd.value
+    categoryColor.value = "#000"
+    categoryName.value = ""
+}
 
 function showEdit(category: CategoryItem) {
     showAdd.value = true
@@ -35,19 +39,22 @@ function setColor(val: string) {
         <form method="dialog" class="modal-box">
             <h3 class="font-bold text-lg">Categories</h3>
             <ul class="menu rounded-box gap-1">
-                <li v-for="category in pomoStore.categories" :key="category.id" class="group"
-                    @click.stop="pomoStore.setActiveCategory(category)">
-                    <a
-                        :class="{ 'bg-base-content text-base-200': (pomoStore.activeCategory && pomoStore.activeCategory.id == category.id) }">
-                        {{ category.name }}
-                        <span class="badge badge-sm " :style="{ backgroundColor: category.color }"></span>
-                        <PhTrash :size="18" class="hidden group-hover:block" />
-                        <PhPen @click.stop="showEdit(category)" :size="18" class="hidden group-hover:block" />
-                    </a>
-                </li>
+                <template v-for="category in pomoStore.categories" :key="category.id">
+                    <li v-if="!category.isDeleted" class="group" @click.stop="pomoStore.setActiveCategory(category)">
+                        <a
+                            :class="{ 'bg-base-content text-base-200': (pomoStore.activeCategory && pomoStore.activeCategory.id == category.id) }">
+                            {{ category.name }}
+                            <span class="badge badge-sm " :style="{ backgroundColor: category.color }"></span>
+                            <PhTrash @click.stop="pomoStore.deleteCategory(category)" :size="18"
+                                class="hidden group-hover:block" />
+                            <PhPen @click.stop="showEdit(category)" :size="18" class="hidden group-hover:block" />
+                        </a>
+                    </li>
+                </template>
+
 
                 <li>
-                    <a @click="showAdd = !showAdd">
+                    <a @click="toggleAdd">
                         <PhPlusCircle :size="22" class="text-base-content" />
                         Add Category
                     </a>
@@ -58,17 +65,17 @@ function setColor(val: string) {
                 <input v-model="categoryName" class="input input-bordered join-item" type="text"
                     placeholder="Category Name" />
 
-                <ColorPicker model="color" @gradiantColorChange="setColor" @pureColorChange="setColor"
-                    picker-container=".modal" />
+                <ColorPicker model="color" :pureColor="categoryColor" @gradiantColorChange="setColor"
+                    @pureColorChange="setColor" picker-container=".modal" />
 
                 <button v-if="isEdit" @click.prevent="() => {
-                    pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor })
+                    pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor, isDeleted: false })
                     showAdd = false
                 }" class="btn join-item rounded-r-full">
                     <PhCheck :size="22" />
                 </button>
                 <button v-else @click.prevent="() => {
-                    pomoStore.addCategory({ id: UUID(), name: categoryName, color: categoryColor })
+                    pomoStore.addCategory({ id: UUID(), name: categoryName, color: categoryColor, isDeleted: false })
                     showAdd = false
                 }" class="btn join-item rounded-r-full">
                     <PhPlus :size="22" />
