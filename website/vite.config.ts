@@ -15,8 +15,8 @@ export default defineConfig({
       },
       includeAssets: ['logo.svg'],
       manifest: {
-        name: 'Pomo',
-        short_name: 'Pomo',
+        name: 'Pomix',
+        short_name: 'Pomix',
         description: 'a progressive web app made to keep you focused',
         theme_color: '#888',
         icons: [

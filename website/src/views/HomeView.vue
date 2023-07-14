@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HomeContent from "../components/ThePomo.vue"
+import HomeContent from "../components/ThePomix.vue"
 </script>
 
 <template>

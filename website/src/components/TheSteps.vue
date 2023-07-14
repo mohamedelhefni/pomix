@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { usePomoStore } from "@/stores/pomo"
+import { usePomixStore } from "@/stores/pomix"
 import { storeToRefs } from "pinia";
 import { getReverseColor } from "@/utils/colorReverse"
 
-const pomoStore = usePomoStore()
-const { sessionRounds, activeCategory, currentSession, categories } = storeToRefs(pomoStore)
+const PomixStore = usePomixStore()
+const { sessionRounds, activeCategory, currentSession, categories } = storeToRefs(PomixStore)
 
 let rounds = currentSession.value.rounds.map(round => {
     round.category = categories.value.find(cat => cat.id == round.categoryId) || categories.value[0]

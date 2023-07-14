@@ -7,6 +7,6 @@ import  { PhTimer } from '@phosphor-icons/vue';
 <template>
     <div class="flex items-center justify-center gap-2 w-full">
         <PhTimer :size="30" class="text-base-content" />
-            <h3 class="font-bold text-xl">Pomo</h3>
+            <h3 class="font-bold text-xl">Pomix</h3>
     </div>
 </template>

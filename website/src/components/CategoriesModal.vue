@@ -1,12 +1,12 @@
 <script  setup lang="ts">
-import { usePomoStore } from '@/stores/pomo';
+import { usePomixStore } from '@/stores/pomix';
 import type { CategoryItem } from '@/types/types';
 import { UUID } from '@/utils/uuid';
 import { PhCheck, PhPen, PhPlus, PhPlusCircle, PhTrash } from '@phosphor-icons/vue';
 
 import { ref } from 'vue'
 
-const pomoStore = usePomoStore()
+const PomixStore = usePomixStore()
 const editCategoryId = ref()
 const categoryColor = ref("#111111")
 const categoryName = ref("")
@@ -39,13 +39,13 @@ function setColor(val: string) {
         <form method="dialog" class="modal-box">
             <h3 class="font-bold text-lg">Categories</h3>
             <ul class="menu rounded-box gap-1">
-                <template v-for="category in pomoStore.categories" :key="category.id">
-                    <li v-if="!category.isDeleted" class="group" @click.stop="pomoStore.setActiveCategory(category)">
+                <template v-for="category in PomixStore.categories" :key="category.id">
+                    <li v-if="!category.isDeleted" class="group" @click.stop="PomixStore.setActiveCategory(category)">
                         <a
-                            :class="{ 'bg-base-content text-base-200': (pomoStore.activeCategory && pomoStore.activeCategory.id == category.id) }">
+                            :class="{ 'bg-base-content text-base-200': (PomixStore.activeCategory && PomixStore.activeCategory.id == category.id) }">
                             {{ category.name }}
                             <span class="badge badge-sm " :style="{ backgroundColor: category.color }"></span>
-                            <PhTrash @click.stop="pomoStore.deleteCategory(category)" :size="18"
+                            <PhTrash @click.stop="PomixStore.deleteCategory(category)" :size="18"
                                 class="hidden group-hover:block" />
                             <PhPen @click.stop="showEdit(category)" :size="18" class="hidden group-hover:block" />
                         </a>
@@ -71,13 +71,13 @@ function setColor(val: string) {
                 </div>
 
                 <button v-if="isEdit" @click.prevent="() => {
-                    pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor, isDeleted: false })
+                    PomixStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor, isDeleted: false })
                     showAdd = false
                 }" class="btn join-item rounded-r-full">
                     <PhCheck :size="22" />
                 </button>
                 <button v-else @click.prevent="() => {
-                    pomoStore.addCategory({ id: UUID(), name: categoryName, color: categoryColor, isDeleted: false })
+                    PomixStore.addCategory({ id: UUID(), name: categoryName, color: categoryColor, isDeleted: false })
                     showAdd = false
                 }" class="btn join-item rounded-r-full">
                     <PhPlus :size="22" />

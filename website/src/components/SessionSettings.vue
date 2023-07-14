@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { usePomoStore } from '@/stores/pomo';
+import { usePomixStore } from '@/stores/pomix';
 import SessionSlider from './SessionSlider.vue';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
-const pomoStore = usePomoStore()
+const PomixStore = usePomixStore()
 
-const { workDuration, shortBreakDuration, longBreakDuration, sessionRounds, isAutoStart, longBreakAfter } = storeToRefs(pomoStore)
-const { setWorkDuration, setLongBreakDuration, setShortBreakDuration, setSessionRounds, setLongBreakAfter, setIsAutoStart } = pomoStore
+const { workDuration, shortBreakDuration, longBreakDuration, sessionRounds, isAutoStart, longBreakAfter } = storeToRefs(PomixStore)
+const { setWorkDuration, setLongBreakDuration, setShortBreakDuration, setSessionRounds, setLongBreakAfter, setIsAutoStart } = PomixStore
 
 const isAuto = ref(isAutoStart)
 

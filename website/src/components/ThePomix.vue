@@ -7,12 +7,12 @@ import { PhGithubLogo, PhTwitterLogo } from "@phosphor-icons/vue";
 
 import { ref, watch, nextTick, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import { usePomoStore } from "@/stores/pomo"
+import { usePomixStore } from "@/stores/pomix"
 
 
-const pomoStore = usePomoStore()
+const PomixStore = usePomixStore()
 const winSize = ref(1200)
-const { categories, activeCategory, currentSession } = storeToRefs(pomoStore)
+const { categories, activeCategory, currentSession } = storeToRefs(PomixStore)
 
 const renderSteps = ref(true)
 
@@ -23,6 +23,30 @@ watch([categories, activeCategory, currentSession], async (state) => {
 }, { deep: true })
 
 onMounted(() => {
+
+    window.addEventListener("keydown", function onEvent(event) {
+        const formElements = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
+        event = event || window.event;
+        //@ts-ignore
+        if (formElements.includes(event?.target?.tagName)) {
+            return
+        }
+        if (event.key === "r") {
+            PomixStore.resetTimer()
+        }
+        else if (event.key === " ") {
+            if (PomixStore.isPaused) {
+                PomixStore.startTimer()
+            } else {
+                PomixStore.pauseTimer()
+            }
+        } else if (event.key === "n") {
+            // move to next
+            PomixStore.skipRound()
+        }
+    });
+
+
 
     winSize.value = window.innerWidth
     window.addEventListener('resize', () => {

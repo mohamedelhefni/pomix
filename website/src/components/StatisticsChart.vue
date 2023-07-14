@@ -2,7 +2,7 @@
 
 import { onMounted } from "vue";
 import { useChartsStore } from '@/stores/charts';
-import { usePomoStore } from "@/stores/pomo";
+import { usePomixStore } from "@/stores/pomix";
 import { storeToRefs } from "pinia";
 import type { RoundItem, SessionItem } from "@/types/types";
 import { TIME_FILTERS } from "@/types/constatns"
@@ -10,8 +10,8 @@ import { TIME_FILTERS } from "@/types/constatns"
 
 
 const chartStore = useChartsStore()
-const pomoStore = usePomoStore()
-const { sessions: storeSessions, categories, currentSession } = storeToRefs(pomoStore)
+const PomixStore = usePomixStore()
+const { sessions: storeSessions, categories, currentSession } = storeToRefs(PomixStore)
 const { chartType, filterType } = storeToRefs(chartStore)
 
 const DAY_MILLISECONDS = 24 * 60 * 60 * 1000

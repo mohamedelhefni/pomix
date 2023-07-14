@@ -4,7 +4,7 @@ import { ref, watch, type Ref } from "vue";
 import { EMOJIS } from "@/types/constatns";
 import { UUID } from "@/utils/uuid";
 
-export const usePomoStore = defineStore("pomo", () => {
+export const usePomixStore = defineStore("Pomix", () => {
     const categories: Ref<CategoryItem[]> = ref([{
         id: UUID(),
         name: "Uncategorized",
@@ -26,11 +26,11 @@ export const usePomoStore = defineStore("pomo", () => {
     const timerStartInterval: Ref<any> = ref(undefined)
     const sessions: Ref<SessionItem[]> = ref([{ id: UUID(), rounds: [] }])
     const currentSession: Ref<SessionItem> = ref(sessions.value[0])
-    const pomoCounter: Ref<number> = ref(0)
+    const PomixCounter: Ref<number> = ref(0)
     const breakDuration: Ref<number> = ref(shortBreakDuration.value)
 
 
-    watch(pomoCounter, (state) => {
+    watch(PomixCounter, (state) => {
         breakDuration.value = ((state % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
     }, { deep: true })
 
@@ -75,14 +75,14 @@ export const usePomoStore = defineStore("pomo", () => {
 
 
                 if (isWorking.value) {
-                    pomoCounter.value++
+                    PomixCounter.value++
                 }
 
-                breakDuration.value = ((pomoCounter.value % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
+                breakDuration.value = ((PomixCounter.value % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
 
 
                 if (isWorking.value) {
-                    new Notification(`You have ${breakDuration.value} mintues before next pomodoro`)
+                    new Notification(`You have ${breakDuration.value} mintues before next Pomixdoro`)
                 } else {
                     new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
                 }
@@ -203,7 +203,7 @@ export const usePomoStore = defineStore("pomo", () => {
         longBreakAfter,
         isPaused,
         isWorking,
-        pomoCounter,
+        PomixCounter,
         startTimer,
         pauseTimer,
         resetTimer,
