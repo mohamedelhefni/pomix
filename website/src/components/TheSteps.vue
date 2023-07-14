@@ -15,8 +15,8 @@ let rounds = currentSession.value.rounds.map(round => {
 </script>
 
 <template>
-    <div class="overflow-x-auto">
-        <ul class="steps steps-horizontal ">
+    <div class="">
+        <ul class="steps steps-vertical md:steps-horizontal ">
             <li v-for="(step) in  Array(sessionRounds).fill(null).map((_, i) => i)  " :key="rounds[step]?.id || step"
                 class="step"
                 :style="{ '--step-background-color': rounds[step]?.category?.color || activeCategory?.color, '--step-color': getReverseColor(rounds[step]?.category?.color || activeCategory?.color) }"

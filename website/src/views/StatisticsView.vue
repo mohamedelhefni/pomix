@@ -5,7 +5,7 @@ import SessionsGrid from '../components/SessionsStatsGrid.vue';
 </script>
 
 <template>
-  <div class="flex flex-col items-start  gap-3 p-5">
+  <div class="flex flex-col items-start  gap-3 ">
     <h1 class="text-4xl font-bold">Overview</h1>
     <SessionsGrid />
   </div>

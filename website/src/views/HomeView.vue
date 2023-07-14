@@ -3,7 +3,5 @@ import HomeContent from "../components/ThePomo.vue"
 </script>
 
 <template>
-  <main>
-    <HomeContent />
-  </main>
+  <HomeContent />
 </template>

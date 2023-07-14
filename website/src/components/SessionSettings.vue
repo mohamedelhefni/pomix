@@ -13,7 +13,7 @@ const isAuto = ref(isAutoStart)
 </script>
 
 <template>
-    <div class="flex flex-col gap-3 w-4/12 p-3 mt-2">
+    <div class="flex flex-col gap-3 w-3/4  p-3 mt-2">
         <SessionSlider @input="(e: any) => setWorkDuration(+e.target.value)" title="Work Duration" :min="5" :max="120"
             :value="workDuration" label="min" />
         <SessionSlider @input="(e: any) => setShortBreakDuration(+e.target.value)" title=" Short break duration" :min="1"

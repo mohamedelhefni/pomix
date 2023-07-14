@@ -20,6 +20,7 @@ export const useChartsStore = defineStore('charts', () => {
         if (chart) {
             chart.destroy()
         }
+        if (!ctx) return
         chart = new Chart(
             ctx,
             {
@@ -28,9 +29,15 @@ export const useChartsStore = defineStore('charts', () => {
                 options: options
             }
         );
+
         if (chartType.value == 'doughnut') {
             chart.resize(400, 400)
         }
+
+        if (window.innerWidth < 600) {
+            chart.resize(350, 600)
+        }
+
         chartCtx.value = ctx
         chartData.value = data
     }

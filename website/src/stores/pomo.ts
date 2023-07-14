@@ -8,7 +8,7 @@ export const usePomoStore = defineStore("pomo", () => {
     const categories: Ref<CategoryItem[]> = ref([{
         id: UUID(),
         name: "Uncategorized",
-        color: "#000000",
+        color: "#111111",
         isDeleted: false
     }])
     const activeCategory: Ref<CategoryItem | undefined> = ref(categories.value[0])
@@ -22,7 +22,7 @@ export const usePomoStore = defineStore("pomo", () => {
     const longBreakAfter: Ref<any> = ref(4)
     const isWorking: Ref<Boolean> = ref(true)
     const isPaused: Ref<Boolean> = ref(true)
-    const currentRound: Ref<RoundItem> = ref({ id: UUID(), color: activeCategory.value?.color || "#000000", order: 1, categoryId: activeCategory.value?.id, isSkipped: false, isBreak: false })
+    const currentRound: Ref<RoundItem> = ref({ id: UUID(), color: activeCategory.value?.color || "#111111", order: 1, categoryId: activeCategory.value?.id, isSkipped: false, isBreak: false })
     const timerStartInterval: Ref<any> = ref(undefined)
     const sessions: Ref<SessionItem[]> = ref([{ id: UUID(), rounds: [] }])
     const currentSession: Ref<SessionItem> = ref(sessions.value[0])
@@ -80,11 +80,14 @@ export const usePomoStore = defineStore("pomo", () => {
 
                 breakDuration.value = ((pomoCounter.value % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
 
+
                 if (isWorking.value) {
                     new Notification(`You have ${breakDuration.value} mintues before next pomodoro`)
                 } else {
                     new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
                 }
+                const audio = new Audio("https://www.toptal.com/project-managers/tomato-timer/sounds/alarmwatch.mp3")
+                audio.play()
 
                 isWorking.value = !isWorking.value;
                 counter.value = isWorking.value ? workDuration.value * 60 : breakDuration.value * 60;

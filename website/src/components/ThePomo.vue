@@ -5,12 +5,13 @@ import Steps from "./TheSteps.vue"
 import Timer from "./TheTimer.vue"
 import { PhGithubLogo, PhTwitterLogo } from "@phosphor-icons/vue";
 
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { usePomoStore } from "@/stores/pomo"
 
 
 const pomoStore = usePomoStore()
+const winSize = ref(1200)
 const { categories, activeCategory, currentSession } = storeToRefs(pomoStore)
 
 const renderSteps = ref(true)
@@ -21,18 +22,25 @@ watch([categories, activeCategory, currentSession], async (state) => {
     renderSteps.value = true
 }, { deep: true })
 
+onMounted(() => {
 
+    winSize.value = window.innerWidth
+    window.addEventListener('resize', () => {
+        winSize.value = window.innerWidth
+    })
+})
 
 
 </script>
 
 <template>
-    <div class="flex flex-col items-center justify-between  w-full h-full p-5">
-        <div class="flex flex-col items-center gap-5 mt-10">
-            <Steps v-if="renderSteps" />
+    <div class="flex flex-col items-center justify-between  w-full h-full  ">
+        <div class="flex flex-col items-center justify-center gap-5 ">
+            <Steps v-if="renderSteps && winSize > 600" />
             <Timer />
             <Controls />
             <Categories />
+            <Steps v-if="renderSteps && winSize < 600" />
         </div>
         <div class="flex flex-col items-center gap-3">
             <div class="">

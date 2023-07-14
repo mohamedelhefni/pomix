@@ -8,7 +8,7 @@ import { ref } from 'vue'
 
 const pomoStore = usePomoStore()
 const editCategoryId = ref()
-const categoryColor = ref("#000000")
+const categoryColor = ref("#111111")
 const categoryName = ref("")
 const showAdd = ref(false)
 const isEdit = ref(false)

@@ -27,9 +27,9 @@ watch([filterType, duraitonFilterType, chartType], async (state) => {
 </script>
 
 <template>
-    <div class="flex flex-col gap-3 w-3/4 mx-auto">
+    <div class="flex flex-col items-center gap-3 w-full mx-auto">
         <div class="flex items-center justify-between gap-2">
-            <Card title="Basic Graph" class="w-10/12">
+            <Card title="Basic Graph" class="w-10/12 ">
                 <div class="flex flex-wrap items-center justify-between gap-2 ">
                     <ChartTypesGroup />
                     <div class="flex flex-wrap items-center gap-3">

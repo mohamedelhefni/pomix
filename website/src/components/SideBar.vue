@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import Logo from './TheLogo.vue';
-import {  PhGear, PhHouse, PhInfo, PhPresentationChart } from '@phosphor-icons/vue';
+import { PhGear, PhHouse, PhInfo, PhPresentationChart } from '@phosphor-icons/vue';
 </script>
 
 <template>
-    <div class="drawer-side">
-        <label for="my-drawer-2" class="drawer-overlay"></label>
+    <div class="drawer-side z-50">
+        <label for="sidebar-drawer" class="drawer-overlay"></label>
         <div class="flex flex-col w-[300px] h-full bg-base-200 text-base-content gap-4 items-center py-10">
             <Logo class="-ml-3" />
             <ul class="menu menu-lg rounded-box my-3 gap-3 ">

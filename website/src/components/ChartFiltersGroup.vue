@@ -7,7 +7,7 @@ const chartStore = useChartsStore()
 </script>
 
 <template>
-    <div class="btn-group">
+    <div class="btn-group flex-wrap">
         <button  class="btn btn-sm" @click="chartStore.setFilterType('categories')"
             :class="{ 'btn-active': chartStore.filterType == 'categories' }">
             <PhSquaresFour :size="24" />
