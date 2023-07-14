@@ -81,11 +81,16 @@ export const usePomixStore = defineStore("Pomix", () => {
                 breakDuration.value = ((PomixCounter.value % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
 
 
-                if (isWorking.value) {
-                    new Notification(`You have ${breakDuration.value} mintues before next Pomixdoro`)
-                } else {
-                    new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
+                try {
+                    if (isWorking.value) {
+                        new Notification(`You have ${breakDuration.value} mintues before next Pomixdoro`)
+                    } else {
+                        new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
+
 
                 const audio = new Audio("/ting.mp3")
                 audio.play()
