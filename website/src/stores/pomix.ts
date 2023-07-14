@@ -86,7 +86,8 @@ export const usePomixStore = defineStore("Pomix", () => {
                 } else {
                     new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
                 }
-                const audio = new Audio("https://www.toptal.com/project-managers/tomato-timer/sounds/alarmwatch.mp3")
+
+                const audio = new Audio("/ting.mp3")
                 audio.play()
 
                 isWorking.value = !isWorking.value;

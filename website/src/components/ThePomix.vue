@@ -23,7 +23,7 @@ watch([categories, activeCategory, currentSession], async (state) => {
 
 onMounted(() => {
 
-    window.addEventListener("keydown", function onEvent(event) {
+    document.addEventListener("keydown", function onEvent(event) {
         const formElements = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'];
         event = event || window.event;
         //@ts-ignore
@@ -34,6 +34,7 @@ onMounted(() => {
             PomixStore.resetTimer()
         }
         else if (event.key === " ") {
+            event.preventDefault()
             if (PomixStore.isPaused) {
                 PomixStore.startTimer()
             } else {
@@ -57,7 +58,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full h-full md:mt-10">
+    <div class="w-full h-full ">
         <div class="flex flex-col items-center justify-center gap-5 ">
             <Steps v-if="renderSteps && winSize > 600" />
             <Timer />
