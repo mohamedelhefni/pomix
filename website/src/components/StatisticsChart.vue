@@ -47,7 +47,7 @@ function getCategoriesData(): any[] {
     const sessions = getAllSessions()
     sessions.filter(dateFilter).forEach((session: SessionItem) => {
         session.rounds.forEach((round: RoundItem) => {
-            if (round.isSkipped || round.isBreak) return
+            // if (round.isSkipped || round.isBreak) return
             if (round.categoryId && catMp.has(round.categoryId)) {
                 let category = catMp.get(round?.categoryId) || { id: "none", name: "none", color: "#fff", count: 0 }
                 category.count++
@@ -80,7 +80,7 @@ function getRoundsData() {
     const dataMp = new Map()
     sessions.filter(dateFilter).forEach((session: SessionItem) => {
         session.rounds.forEach((round: RoundItem) => {
-            if (round.isSkipped || round.isBreak) return
+            // if (round.isSkipped || round.isBreak) return
             if (!round.startDate) return
             let roundDate = getDate(round?.startDate)
             if (!dataMp.has(roundDate))
