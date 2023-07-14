@@ -6,6 +6,9 @@ import { PhCheck, PhPen, PhPlus, PhPlusCircle, PhTrash } from '@phosphor-icons/v
 
 import { ref } from 'vue'
 
+
+// TODO: fix bug when add or edit
+
 const PomixStore = usePomixStore()
 const editCategoryId = ref()
 const categoryColor = ref("#111111")
@@ -15,6 +18,7 @@ const isEdit = ref(false)
 
 function toggleAdd() {
     showAdd.value = !showAdd.value
+    isEdit.value = false
     categoryColor.value = "#000"
     categoryName.value = ""
 }
