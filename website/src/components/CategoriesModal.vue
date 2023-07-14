@@ -62,11 +62,13 @@ function setColor(val: string) {
 
             </ul>
             <div v-if="showAdd" class="join mx-auto w-full items-center justify-center gap-2">
-                <input v-model="categoryName" class="input input-bordered join-item" type="text"
+                <input v-model="categoryName" class="input w-10/12 input-bordered join-item" type="text"
                     placeholder="Category Name" />
 
-                <ColorPicker model="color" :pureColor="categoryColor" @gradiantColorChange="setColor"
-                    @pureColorChange="setColor" picker-container=".modal" />
+                <div class="w-2/12 mx-auto">
+                    <ColorPicker class="" model="color" :pureColor="categoryColor" @gradiantColorChange="setColor"
+                        @pureColorChange="setColor" picker-container=".modal" />
+                </div>
 
                 <button v-if="isEdit" @click.prevent="() => {
                     pomoStore.editCategory({ id: editCategoryId, name: categoryName, color: categoryColor, isDeleted: false })
