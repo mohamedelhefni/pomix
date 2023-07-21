@@ -34,12 +34,13 @@ export const usePomixStore = defineStore("Pomix", () => {
         breakDuration.value = ((state % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
     }, { deep: true })
 
-    function newRound(skip: boolean) {
+    function newRound(skip: boolean): RoundItem {
         return {
             id: UUID(),
             color: activeCategory.value?.color || '#000',
             isSkipped: skip,
             isBreak: !isWorking.value,
+            duration: workDuration.value,
             categoryId: activeCategory.value?.id,
             order: currentSession.value.rounds.length + 1,
             startDate: Date.now()

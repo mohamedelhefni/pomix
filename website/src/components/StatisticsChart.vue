@@ -43,19 +43,22 @@ const getDate = (time: number) => {
 }
 
 function getCategoriesData(): any[] {
-    const catMp = new Map(categories.value.filter(cat => !cat.isDeleted).map(cat => [cat.id, { id: cat.id, name: cat.name, color: cat.color, count: 0 }]))
+    const catMp = new Map(categories.value.filter(cat => !cat.isDeleted).map(cat => [cat.id, { id: cat.id, name: cat.name, color: cat.color, count: 0, duration: 0 }]))
     const sessions = getAllSessions()
     sessions.filter(dateFilter).forEach((session: SessionItem) => {
         session.rounds.forEach((round: RoundItem) => {
-            // if (round.isSkipped || round.isBreak) return
+            if (round.isSkipped || round.isBreak) return
             if (round.categoryId && catMp.has(round.categoryId)) {
-                let category = catMp.get(round?.categoryId) || { id: "none", name: "none", color: "#fff", count: 0 }
+                let category = catMp.get(round?.categoryId) || { id: "none", name: "none", color: "#fff", count: 0, duration: 0 }
                 category.count++
+                if (round.duration) {
+                    category.duration += round.duration
+                }
                 catMp.set(category?.id, category)
             }
         })
     })
-    const data = Array.from(catMp).map(([_, value]) => ({ item: value.name, count: value.count, color: value.color }))
+    const data = Array.from(catMp).map(([_, value]) => ({ item: value.name, count: value.count, color: value.color, duration: value.duration }))
     return data
 }
 
@@ -80,7 +83,7 @@ function getRoundsData() {
     const dataMp = new Map()
     sessions.filter(dateFilter).forEach((session: SessionItem) => {
         session.rounds.forEach((round: RoundItem) => {
-            // if (round.isSkipped || round.isBreak) return
+            if (round.isSkipped || round.isBreak) return
             if (!round.startDate) return
             let roundDate = getDate(round?.startDate)
             if (!dataMp.has(roundDate))
@@ -103,7 +106,7 @@ onMounted(() => {
         datasets: [
             {
                 label: filterType.value,
-                data: data.map((row: any) => row.count),
+                data: data.map((row: any) => chartStore.filterType == 'categories' && chartStore.filterBy == 'duration' ? row.duration : row.count),
                 backgroundColor: data.map((row: any) => row.color)
             }
         ],

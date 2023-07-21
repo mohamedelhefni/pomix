@@ -6,11 +6,13 @@ export const useChartsStore = defineStore('charts', () => {
     type chartTypes = 'line' | 'bar' | 'doughnut'
     type filterTypes = 'categories' | 'sessions' | 'rounds'
     type durationFilterTypes = 'day' | 'week' | 'year' | 'month' | 'all'
+    type filterByTypes = 'count' | 'duration'
 
     const chartType: Ref<chartTypes> = ref('line')
     const activeChart: any = ref();
     const filterType: Ref<filterTypes> = ref('categories')
     const duraitonFilterType: Ref<durationFilterTypes> = ref('day')
+    const filterBy: Ref<filterByTypes> = ref('count')
 
     let chart: any;
     const chartCtx: any = ref()
@@ -60,6 +62,10 @@ export const useChartsStore = defineStore('charts', () => {
         duraitonFilterType.value = type
     }
 
+    function setFilterBy(type: filterByTypes) {
+        filterBy.value = type
+    }
 
-    return { chartType, setChartType, activeChart, chart, drawChart, filterType, setFilterType, duraitonFilterType, setDuraitonFilterType }
+
+    return { chartType, setChartType, activeChart, chart, drawChart, filterType, setFilterType, duraitonFilterType, setDuraitonFilterType, filterBy, setFilterBy }
 })
