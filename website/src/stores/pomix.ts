@@ -4,6 +4,9 @@ import { ref, watch, type Ref } from "vue";
 import { EMOJIS } from "@/types/constatns";
 import { UUID } from "@/utils/uuid";
 
+// Dev mode detection using Vite's environment
+const isDevMode = import.meta.env.DEV
+
 export const usePomixStore = defineStore("Pomix", () => {
     const categories: Ref<CategoryItem[]> = ref([{
         id: UUID(),
@@ -24,7 +27,7 @@ export const usePomixStore = defineStore("Pomix", () => {
     const isPaused: Ref<Boolean> = ref(true)
     const currentRound: Ref<RoundItem> = ref({ id: UUID(), color: activeCategory.value?.color || "#111111", order: 1, categoryId: activeCategory.value?.id, isSkipped: false, isBreak: false })
     const timerStartInterval: Ref<any> = ref(undefined)
-    const sessions: Ref<SessionItem[]> = ref([{ id: UUID(), rounds: [] }])
+    const sessions: Ref<SessionItem[]> = ref([{ id: UUID(), rounds: [], startDate: Date.now() }])
     const currentSession: Ref<SessionItem> = ref(sessions.value[0])
     const PomixCounter: Ref<number> = ref(0)
     const breakDuration: Ref<number> = ref(shortBreakDuration.value)
@@ -35,12 +38,14 @@ export const usePomixStore = defineStore("Pomix", () => {
     }, { deep: true })
 
     function newRound(skip: boolean): RoundItem {
+        // Use the correct duration based on whether this was a work or break round
+        const roundDuration = isWorking.value ? workDuration.value : breakDuration.value
         return {
             id: UUID(),
             color: activeCategory.value?.color || '#000',
             isSkipped: skip,
             isBreak: !isWorking.value,
-            duration: workDuration.value,
+            duration: roundDuration,
             categoryId: activeCategory.value?.id,
             order: currentSession.value.rounds.length + 1,
             startDate: Date.now()
@@ -198,6 +203,82 @@ export const usePomixStore = defineStore("Pomix", () => {
         return ~~((counter.value / (breakDuration.value * 60)) * 100)
     }
 
+    // Generate random sessions for testing (dev mode only)
+    function generateRandomSessions(count: number = 10) {
+        if (!isDevMode) return
+
+        const DAY_MS = 24 * 60 * 60 * 1000
+        
+        // Add some test categories if only default exists
+        const testCategories = [
+            { name: 'Work', color: '#3B82F6' },
+            { name: 'Study', color: '#10B981' },
+            { name: 'Exercise', color: '#F59E0B' },
+            { name: 'Reading', color: '#8B5CF6' },
+            { name: 'Coding', color: '#EC4899' }
+        ]
+        
+        testCategories.forEach(cat => {
+            const exists = categories.value.some(c => c.name === cat.name && !c.isDeleted)
+            if (!exists) {
+                categories.value.push({
+                    id: UUID(),
+                    name: cat.name,
+                    color: cat.color,
+                    isDeleted: false
+                })
+            }
+        })
+        
+        const availableCategories = categories.value.filter(c => !c.isDeleted)
+        
+        for (let i = 0; i < count; i++) {
+            // Random date within the past 60 days
+            const sessionStartDate = Date.now() - Math.floor(Math.random() * 60) * DAY_MS
+            const roundCount = Math.floor(Math.random() * sessionRounds.value) + 1
+            const rounds: RoundItem[] = []
+            
+            let roundTime = sessionStartDate
+            for (let j = 0; j < roundCount; j++) {
+                // Pick a random category for each work round
+                const category = availableCategories[Math.floor(Math.random() * availableCategories.length)]
+                const isBreakRound = j % 2 === 1
+                const duration = isBreakRound 
+                    ? (Math.random() > 0.75 ? longBreakDuration.value : shortBreakDuration.value)
+                    : workDuration.value
+                
+                rounds.push({
+                    id: UUID(),
+                    color: category.color,
+                    order: j + 1,
+                    isSkipped: Math.random() > 0.9, // 10% chance of being skipped
+                    isBreak: isBreakRound,
+                    startDate: roundTime,
+                    duration: duration,
+                    categoryId: category.id
+                })
+                
+                roundTime += duration * 60 * 1000 // Add duration in ms
+            }
+            
+            const newSession: SessionItem = {
+                id: UUID(),
+                rounds,
+                startDate: sessionStartDate,
+                endDate: roundTime
+            }
+            
+            sessions.value.push(newSession)
+        }
+    }
+
+    // Clear all sessions (dev mode only)
+    function clearAllSessions() {
+        if (!isDevMode) return
+        sessions.value = []
+        currentSession.value = { id: UUID(), rounds: [], startDate: Date.now() }
+    }
+
 
     if (Notification.permission !== 'granted') {
         Notification.requestPermission();
@@ -225,6 +306,8 @@ export const usePomixStore = defineStore("Pomix", () => {
         setSessionRounds,
         setLongBreakAfter,
         setIsAutoStart,
-        getCounterProgress
+        getCounterProgress,
+        generateRandomSessions,
+        clearAllSessions
     }
 })

@@ -6,6 +6,7 @@ import { usePomixStore } from "@/stores/pomix";
 import { storeToRefs } from "pinia";
 import type { RoundItem, SessionItem } from "@/types/types";
 import { TIME_FILTERS } from "@/types/constatns"
+import { formatDuration, formatDurationLong } from "@/utils/timeFormat"
 
 
 
@@ -32,11 +33,12 @@ const getDate = (time: number) => {
         case 'day':
             return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
         case 'week':
+            return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
         case 'month':
-            return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' })
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         case 'all':
         case 'year':
-            return date.toLocaleDateString('en-US', { month: 'long' })
+            return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
         default:
             break
     }
@@ -70,11 +72,19 @@ function getSessionsData() {
         if (!session.startDate) return
         let sessionDate = getDate(session?.startDate)
         if (!dataMp.has(sessionDate))
-            dataMp.set(sessionDate, 0)
-        dataMp.set(sessionDate, (dataMp.get(sessionDate) ?? 0) + 1)
+            dataMp.set(sessionDate, { count: 0, duration: 0 })
+        const current = dataMp.get(sessionDate)
+        current.count++
+        // Sum up duration from all work rounds in session
+        session.rounds.forEach((round: RoundItem) => {
+            if (!round.isSkipped && !round.isBreak && round.duration) {
+                current.duration += round.duration
+            }
+        })
+        dataMp.set(sessionDate, current)
     })
 
-    const data = Array.from(dataMp).map(([key, value]) => ({ item: key, count: value, color: "#00ADB5" }))
+    const data = Array.from(dataMp).map(([key, value]) => ({ item: key, count: value.count, duration: value.duration, color: "#00ADB5" }))
     return data
 }
 
@@ -87,17 +97,72 @@ function getRoundsData() {
             if (!round.startDate) return
             let roundDate = getDate(round?.startDate)
             if (!dataMp.has(roundDate))
-                dataMp.set(roundDate, 0)
-            dataMp.set(roundDate, (dataMp.get(roundDate) ?? 0) + 1)
+                dataMp.set(roundDate, { count: 0, duration: 0 })
+            const current = dataMp.get(roundDate)
+            current.count++
+            if (round.duration) {
+                current.duration += round.duration
+            }
+            dataMp.set(roundDate, current)
         })
     })
 
-    const data = Array.from(dataMp).map(([key, value]) => ({ item: key, count: value, color: "#00ADB5" }))
+    const data = Array.from(dataMp).map(([key, value]) => ({ item: key, count: value.count, duration: value.duration, color: "#00ADB5" }))
     return data
 }
 
 
 const data = filterType.value == 'categories' && chartType.value != 'line' ? getCategoriesData() : filterType.value == 'sessions' ? getSessionsData() : getRoundsData()
+
+// Chart options with human-friendly tooltips
+const chartOptions = {
+    responsive: true,
+    plugins: {
+        tooltip: {
+            callbacks: {
+                label: function(context: any) {
+                    const dataIndex = context.dataIndex
+                    const item = data[dataIndex]
+                    const filterBy = chartStore.filterBy
+                    const filterTypeValue = chartStore.filterType
+                    
+                    if (filterTypeValue === 'categories' && filterBy === 'duration') {
+                        return `${item.item}: ${formatDurationLong(item.duration)}`
+                    }
+                    
+                    if (filterBy === 'duration' || filterTypeValue !== 'categories') {
+                        const count = item.count
+                        const duration = item.duration || 0
+                        const label = filterTypeValue === 'sessions' ? 'session' : 'pomodoro'
+                        const labelPlural = filterTypeValue === 'sessions' ? 'sessions' : 'pomodoros'
+                        return [
+                            `${count} ${count === 1 ? label : labelPlural}`,
+                            `Total: ${formatDurationLong(duration)}`
+                        ]
+                    }
+                    
+                    return `${item.item}: ${item.count} pomodoros`
+                }
+            }
+        },
+        legend: {
+            display: chartType.value === 'doughnut'
+        }
+    },
+    scales: chartType.value !== 'doughnut' ? {
+        y: {
+            beginAtZero: true,
+            ticks: {
+                callback: function(value: any) {
+                    if (chartStore.filterType === 'categories' && chartStore.filterBy === 'duration') {
+                        return formatDuration(value)
+                    }
+                    return value
+                }
+            }
+        }
+    } : undefined
+}
 
 onMounted(() => {
     let ctx = document.getElementById('chart')
@@ -105,13 +170,15 @@ onMounted(() => {
         labels: data.map((row: any) => row.item),
         datasets: [
             {
-                label: filterType.value,
+                label: chartStore.filterBy === 'duration' ? 'Time Spent' : 
+                       filterType.value === 'sessions' ? 'Sessions' : 
+                       filterType.value === 'rounds' ? 'Pomodoros' : 'Pomodoros',
                 data: data.map((row: any) => chartStore.filterType == 'categories' && chartStore.filterBy == 'duration' ? row.duration : row.count),
                 backgroundColor: data.map((row: any) => row.color)
             }
         ],
 
-    })
+    }, chartOptions)
 })
 
 

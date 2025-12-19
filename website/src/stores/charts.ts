@@ -18,10 +18,15 @@ export const useChartsStore = defineStore('charts', () => {
     const chartCtx: any = ref()
     const chartData: any = ref([])
 
-    function drawChart(ctx: any, data: any, options = {}) {
+    function destroyChart() {
         if (chart) {
             chart.destroy()
+            chart = null
         }
+    }
+
+    function drawChart(ctx: any, data: any, options = {}) {
+        destroyChart()
         if (!ctx) return
         chart = new Chart(
             ctx,
@@ -67,5 +72,5 @@ export const useChartsStore = defineStore('charts', () => {
     }
 
 
-    return { chartType, setChartType, activeChart, chart, drawChart, filterType, setFilterType, duraitonFilterType, setDuraitonFilterType, filterBy, setFilterBy }
+    return { chartType, setChartType, activeChart, drawChart, destroyChart, filterType, setFilterType, duraitonFilterType, setDuraitonFilterType, filterBy, setFilterBy }
 })
