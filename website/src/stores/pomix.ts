@@ -3,9 +3,51 @@ import { defineStore } from "pinia";
 import { ref, watch, type Ref } from "vue";
 import { EMOJIS } from "@/types/constatns";
 import { UUID } from "@/utils/uuid";
+import { formatDuration } from "@/utils/timeFormat";
 
 // Dev mode detection using Vite's environment
 const isDevMode = import.meta.env.DEV
+
+// Audio instance for notification sound (reusable)
+let notificationAudio: HTMLAudioElement | null = null
+
+// Send notification that works across tabs
+function sendNotification(title: string, body: string, icon: string = '/logo.png') {
+    if (Notification.permission === 'granted') {
+        const notification = new Notification(title, {
+            body,
+            icon,
+            tag: 'pomix-timer', // Prevents duplicate notifications
+            requireInteraction: true, // Keeps notification visible until user interacts
+            silent: false
+        })
+        
+        // Auto close after 10 seconds
+        setTimeout(() => notification.close(), 10000)
+        
+        // Focus window when notification is clicked
+        notification.onclick = () => {
+            window.focus()
+            notification.close()
+        }
+    }
+}
+
+// Play notification sound
+function playNotificationSound() {
+    try {
+        if (!notificationAudio) {
+            notificationAudio = new Audio("/ting.mp3")
+        }
+        notificationAudio.currentTime = 0
+        notificationAudio.play().catch(() => {
+            // Audio play failed, likely due to autoplay policy
+            console.log('Audio autoplay blocked')
+        })
+    } catch (error) {
+        console.log('Audio error:', error)
+    }
+}
 
 export const usePomixStore = defineStore("Pomix", () => {
     const categories: Ref<CategoryItem[]> = ref([{
@@ -86,20 +128,22 @@ export const usePomixStore = defineStore("Pomix", () => {
 
                 breakDuration.value = ((PomixCounter.value % longBreakAfter.value) == 0) ? longBreakDuration.value : shortBreakDuration.value
 
-
-                try {
-                    if (isWorking.value) {
-                        new Notification(`You have ${breakDuration.value} mintues before next Pomixdoro`)
-                    } else {
-                        new Notification("Break Ended it's time to start working on " + activeCategory.value?.name)
-                    }
-                } catch (error) {
-                    console.log(error)
+                // Send notification with proper formatting
+                const breakTimeFormatted = formatDuration(breakDuration.value)
+                if (isWorking.value) {
+                    sendNotification(
+                        '🎉 Pomodoro Complete!',
+                        `Great work! Take a ${breakTimeFormatted} break before your next session.`
+                    )
+                } else {
+                    sendNotification(
+                        '⏰ Break Over!',
+                        `Time to focus on "${activeCategory.value?.name}". Let's be productive!`
+                    )
                 }
 
-
-                const audio = new Audio("/ting.mp3")
-                audio.play()
+                // Play sound
+                playNotificationSound()
 
                 isWorking.value = !isWorking.value;
                 counter.value = isWorking.value ? workDuration.value * 60 : breakDuration.value * 60;
@@ -109,8 +153,8 @@ export const usePomixStore = defineStore("Pomix", () => {
             }
             const minutes = Math.floor(counter.value / 60);
             const seconds = counter.value % 60;
-            currentTime.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} `
-            document.title = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} | ${isWorking.value ? EMOJIS.WORK_DURATION : EMOJIS.BREAK_DURATION} ${activeCategory.value?.name}  `
+            currentTime.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+            document.title = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} | ${isWorking.value ? EMOJIS.WORK_DURATION : EMOJIS.BREAK_DURATION} ${activeCategory.value?.name}`
             counter.value--;
         }, 1000)
     }
